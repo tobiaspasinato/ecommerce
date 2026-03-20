@@ -4,7 +4,7 @@ import pool from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import { RowDataPacket, FieldPacket } from 'mysql2/promise';
 
-dotenv.config();
+
 
 export async function GET() {
     const [rows] = await pool.query('SELECT * FROM usuarios') as [RowDataPacket[], FieldPacket[]];
@@ -20,12 +20,12 @@ export async function POST(request: NextRequest) {
         if (existingUser.length > 0) {
             return NextResponse.json({ message: 'User already exists' }, { status: 400 });
         }
-        
-            // Hash the password
-            const hashedPassword = await bcrypt.hash(password, 10);
-        
-            // Insert new user into the database
-            await pool.query('INSERT INTO usuarios (email, password_hash) VALUES (?, ?)', [email, hashedPassword]);
+    
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+    
+        // Insert new user into the database
+        await pool.query('INSERT INTO usuarios (email, password_hash) VALUES (?, ?)', [email, hashedPassword]);
         
         return NextResponse.json({ 
             message: `Usuario ${email} registrado exitosamente!` 
