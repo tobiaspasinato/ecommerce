@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Generate JWT token
-        const token = jwt.sign({ email: user[0].email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ sub: user[0].id, email: user[0].email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         // Set the token in an HTTP-only cookie
         const response = NextResponse.json({ message: 'Login successful' });

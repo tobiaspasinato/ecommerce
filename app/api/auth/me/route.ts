@@ -5,8 +5,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export async function GET(request: NextRequest) {
-    // trae el token de las cookies
-    const token = request.cookies.get('token')?.value;
+    // trae el token del header Authorization
+    const authHeader = request.headers.get('Authorization');
+    const token = authHeader?.replace('Bearer ', '');
 
     // Si no hay token, el usuario no está autenticado
     if (!token) {
@@ -20,8 +21,13 @@ export async function GET(request: NextRequest) {
     }
     // Verifica el token JWT y decodifica su contenido
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if(typeof decoded === 'string') {
+        return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    }
+
     // Si el token es válido, devuelve la información del usuario
-    return NextResponse.json({ message: 'Acceso permitido', user: decoded });
+    return NextResponse.json({ message: 'Acceso permitido', user: { id: decoded.sub, email: decoded.email } });
     } catch (error) {
         console.error('Error en Login:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
